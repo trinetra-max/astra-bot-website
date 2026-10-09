@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Astra XAUUSD Expert Advisor for MetaTrader 5. Manual USDT payment verification and Telegram delivery." />
+  <title>ASTRA — XAUUSD Expert Advisor</title>
+  <style>
+    :root { --bg:#090a0b; --panel:#121314; --gold:#d7b56d; --gold2:#f0d99f; --muted:#a6a6a6; --line:#2c2922; --white:#f7f5ef; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; color:var(--white); background:radial-gradient(ellipse at 50% -20%, #292315 0%, var(--bg) 48%); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; line-height:1.6; }
+    a { color:inherit; }
+    .wrap { width:min(1080px,92%); margin:auto; }
+    header { display:flex; justify-content:space-between; align-items:center; padding:22px 0; border-bottom:1px solid rgba(215,181,109,.16); }
+    .brand { display:flex; gap:12px; align-items:center; text-decoration:none; }
+    .mark { width:42px;height:42px; display:grid;place-items:center;border:1px solid var(--gold);border-radius:12px;color:var(--gold);font-size:21px;font-weight:800; }
+    .brand strong { letter-spacing:.22em; font-size:18px; }
+    .brand small { display:block;color:var(--muted);font-size:10px;letter-spacing:.12em;margin-top:-3px; }
+    .nav { display:flex;gap:24px;align-items:center;font-size:13px;color:#d0cec7; }
+    .nav a { text-decoration:none; }
+    .nav a:hover { color:var(--gold2); }
+    .btn { display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--gold);border-radius:8px;padding:13px 19px;background:var(--gold);color:#17140d;font-weight:800;text-decoration:none;cursor:pointer;transition:.2s; }
+    .btn:hover { background:var(--gold2);transform:translateY(-1px); }
+    .btn.secondary { background:transparent;color:var(--gold2); }
+    .hero { display:grid;grid-template-columns:1.1fr .9fr;gap:52px;align-items:center;padding:82px 0 70px; }
+    .eyebrow { color:var(--gold);text-transform:uppercase;letter-spacing:.2em;font-size:11px;font-weight:800; }
+    h1 { font-size:clamp(44px,6vw,74px);line-height:1.02;letter-spacing:-.055em;margin:18px 0; }
+    h1 span { color:var(--gold); }
+    .lead { color:#b9b8b2;max-width:560px;font-size:17px; }
+    .actions { display:flex;flex-wrap:wrap;gap:12px;margin-top:28px; }
+    .note { font-size:11px;color:#85847e;margin-top:15px; }
+    .visual { position:relative;min-height:330px;border:1px solid #403724;border-radius:22px;background:linear-gradient(145deg,#1c1912,#101112 65%);overflow:hidden;padding:26px;box-shadow:0 22px 90px #0008; }
+    .visual:before { content:"";position:absolute;inset:0;background:linear-gradient(130deg,transparent 30%,rgba(215,181,109,.08),transparent 72%);pointer-events:none; }
+    .chart-title { display:flex;justify-content:space-between;color:#c4c1b7;font-size:12px;position:relative; }
+    .chart { width:100%;height:220px;margin-top:15px;position:relative; }
+    .chart svg { width:100%;height:100%; }
+    .price { position:absolute;bottom:22px;left:26px;color:var(--gold2);font-size:12px; }
+    .section { padding:60px 0; }
+    .section h2 { font-size:clamp(28px,4vw,42px);line-height:1.15;margin:10px 0 14px;letter-spacing:-.03em; }
+    .sub { color:var(--muted);max-width:680px; }
+    .grid { display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:28px; }
+    .card { border:1px solid var(--line);border-radius:14px;padding:23px;background:rgba(18,19,20,.82); }
+    .card .icon { color:var(--gold);font-size:22px; }
+    .card h3 { font-size:16px;margin:12px 0 7px; }
+    .card p { font-size:13px;color:var(--muted);margin:0; }
+    .purchase { display:grid;grid-template-columns:1fr .9fr;gap:28px;align-items:start; }
+    .price-card { border:1px solid #5d4b2a;border-radius:18px;padding:28px;background:linear-gradient(145deg,#19160f,#111213); }
+    .price-big { font-size:48px;font-weight:800;letter-spacing:-.05em;color:var(--gold2);line-height:1.1; }
+    .price-big small { font-size:14px;color:var(--muted);letter-spacing:0; }
+    .includes { padding:0;list-style:none;color:#d4d1c8;font-size:14px; }
+    .includes li { margin:10px 0; }
+    .includes li:before { content:"✓";color:var(--gold);margin-right:10px; }
+    .payment { border:1px solid var(--line);border-radius:18px;padding:26px;background:#101112; }
+    .payment h3 { margin-top:0; }
+    .step { display:flex;gap:12px;margin:17px 0; }
+    .num { flex:0 0 28px;height:28px;border:1px solid #69552e;color:var(--gold2);border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800; }
+    .step p { margin:0;color:#c1c0b9;font-size:13px; }
+    .wallet { overflow-wrap:anywhere;background:#080909;border:1px dashed #61502f;border-radius:8px;padding:13px;color:var(--gold2);font-size:12px;margin:10px 0; }
+    .copyrow { display:flex;gap:8px; }
+    .copyrow .wallet { flex:1;margin:0; }
+    .copy { background:#27231a;border:1px solid #5b4b2d;color:var(--gold2);border-radius:8px;padding:0 12px;cursor:pointer; }
+    .warning { font-size:12px;color:#c4ad7a;background:#1a170f;border-radius:8px;padding:12px;margin-top:14px; }
+    .disclaimer { border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;color:#9a9891;font-size:12px; }
+    footer { padding:28px 0 38px;display:flex;justify-content:space-between;gap:20px;color:#7f7e78;font-size:12px; }
+    .modal-backdrop { position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;padding:20px;z-index:10; }
+    .modal-backdrop.show { display:flex; }
+    .modal { width:min(520px,100%);max-height:90vh;overflow:auto;background:#111213;border:1px solid #6a562e;border-radius:16px;padding:26px;box-shadow:0 20px 90px #000; }
+    .modal h2 { margin-top:0; }
+    .modal p { color:#bbb9b1;font-size:14px; }
+    .close { float:right;background:transparent;border:0;color:#c8c5bb;font-size:25px;cursor:pointer; }
+    .field { display:block;margin:14px 0;color:#d4d1c8;font-size:12px; }
+    .field input { display:block;width:100%;margin-top:6px;padding:12px;border:1px solid #39352c;border-radius:8px;background:#080909;color:white; }
+    .full { width:100%;margin-top:12px; }
+    .small { font-size:11px!important;color:#88867f!important; }
+    @media(max-width:760px) {
+      .nav a:not(.btn) { display:none; }
+      .hero,.purchase { grid-template-columns:1fr;gap:28px;padding-top:52px; }
+      .visual { min-height:270px; }
+      .grid { grid-template-columns:1fr; }
+      .section { padding:42px 0; }
+      footer { flex-direction:column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#" aria-label="Astra home">
+        <span class="mark">A</span><span><strong>ASTRA</strong><small>XAUUSD EXPERT ADVISOR</small></span>
+      </a>
+      <nav class="nav"><a href="#features">Features</a><a href="#how">How to buy</a><a class="btn" href="#buy">Get Astra · $49</a></nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Algorithmic trading · MetaTrader 5</div>
+          <h1>Meet <span>Astra.</span><br>Built for gold.</h1>
+          <p class="lead">An XAUUSD Expert Advisor concept for MetaTrader 5, presented with a clear setup process and direct support through Telegram.</p>
+          <div class="actions"><a class="btn" href="#buy">Get Astra for $49 <span>↗</span></a><a class="btn secondary" href="#features">Explore features</a></div>
+          <p class="note">One-time price · Manual USDT payment verification · Telegram delivery</p>
+        </div>
+        <div class="visual" aria-label="Decorative gold trading chart">
+          <div class="chart-title"><span>XAUUSD · Illustrative chart</span><span style="color:#d7b56d">ASTRA</span></div>
+          <div class="chart">
+            <svg viewBox="0 0 420 230" role="img" aria-label="Illustrative candlestick chart">
+              <g stroke="#39352b" stroke-width="1"><path d="M0 35H420M0 80H420M0 125H420M0 170H420M0 215H420"/></g>
+              <polyline points="0,170 24,158 48,180 72,140 96,149 120,112 144,132 168,91 192,104 216,69 240,96 264,54 288,72 312,40 336,59 360,28 384,47 420,20" fill="none" stroke="#d7b56d" stroke-width="2" opacity=".85"/>
+              <g stroke-width="2">
+                <path d="M25 138V183" stroke="#c4c4b6"/><rect x="19" y="151" width="12" height="20" fill="#b8b7a5"/>
+                <path d="M61 132V177" stroke="#d7b56d"/><rect x="55" y="141" width="12" height="22" fill="#d7b56d"/>
+                <path d="M97 113V163" stroke="#c4c4b6"/><rect x="91" y="127" width="12" height="24" fill="#b8b7a5"/>
+                <path d="M133 95V146" stroke="#d7b56d"/><rect x="127" y="106" width="12" height="27" fill="#d7b56d"/>
+                <path d="M169 77V123" stroke="#d7b56d"/><rect x="163" y="89" width="12" height="23" fill="#d7b56d"/>
+                <path d="M205 59V113" stroke="#c4c4b6"/><rect x="199" y="74" width="12" height="23" fill="#b8b7a5"/>
+                <path d="M241 43V95" stroke="#d7b56d"/><rect x="235" y="52" width="12" height="27" fill="#d7b56d"/>
+                <path d="M277 34V79" stroke="#d7b56d"/><rect x="271" y="43" width="12" height="20" fill="#d7b56d"/>
+                <path d="M313 21V67" stroke="#c4c4b6"/><rect x="307" y="30" width="12" height="24" fill="#b8b7a5"/>
+                <path d="M349 14V56" stroke="#d7b56d"/><rect x="343" y="22" width="12" height="21" fill="#d7b56d"/>
+                <path d="M385 8V48" stroke="#d7b56d"/><rect x="379" y="15" width="12" height="19" fill="#d7b56d"/>
+              </g>
+            </svg>
+          </div>
+          <div class="price">Illustrative artwork · Not live market data</div>
+        </div>
+      </section>
+
+      <section class="section" id="features">
+        <div class="eyebrow">The essentials</div>
+        <h2>Clear setup. Direct delivery.</h2>
+        <p class="sub">Review the product details and trading risks before purchasing. No profit guarantees or claims of a guaranteed win rate.</p>
+        <div class="grid">
+          <article class="card"><div class="icon">⌁</div><h3>MetaTrader 5</h3><p>Designed as an Expert Advisor for the MT5 trading platform. Confirm compatibility with your broker before use.</p></article>
+          <article class="card"><div class="icon">◇</div><h3>Gold-focused</h3><p>Created for XAUUSD. Gold spreads, execution, leverage and contract specifications vary by broker.</p></article>
+          <article class="card"><div class="icon">↗</div><h3>Telegram support</h3><p>Send your transaction details to our Telegram account. The order is checked manually before delivery.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="buy">
+        <div class="eyebrow">Get started</div>
+        <h2>Purchase Astra</h2>
+        <p class="sub">Pay in USDT, send your transaction details to Telegram, and wait for manual confirmation before the file is sent.</p>
+        <div class="purchase" style="margin-top:28px">
+          <div class="price-card">
+            <div class="eyebrow">Astra · MT5 EA</div>
+            <p class="price-big">$49 <small>USD · one-time</small></p>
+            <ul class="includes">
+              <li>Astra EA file, sent after payment verification</li>
+              <li>Basic installation instructions</li>
+              <li>Telegram order communication</li>
+            </ul>
+            <button class="btn full" onclick="openPayment()">View USDT payment instructions</button>
+            <p class="small">Do not pay until you have confirmed the wallet address and exact network shown by the seller.</p>
+          </div>
+          <div class="payment" id="how">
+            <h3>How manual checkout works</h3>
+            <div class="step"><span class="num">1</span><p>Open the payment instructions and carefully copy the USDT wallet address.</p></div>
+            <div class="step"><span class="num">2</span><p>Send the required payment using only the confirmed network. Keep the transaction hash.</p></div>
+            <div class="step"><span class="num">3</span><p>Message the Astra Telegram account with your transaction hash and contact details.</p></div>
+            <div class="step"><span class="num">4</span><p>After the payment is independently verified, the seller sends the file manually.</p></div>
+            <div class="warning">Never share your wallet seed phrase or private key. A screenshot alone does not confirm a payment.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="disclaimer">
+        <strong style="color:#c9b27c">Risk disclosure:</strong> Trading forex and CFDs, including gold, involves substantial risk and may result in loss of capital. Automated strategies can experience drawdowns, slippage, spread costs, gaps and broker-specific execution issues. Past or simulated performance does not guarantee future results. Test on a demo account and understand the EA's risk settings before live use.
+      </section>
+    </main>
+    <footer><span>© <span id="year"></span> ASTRA. All rights reserved.</span><span>Independent software product · No profit guarantees</span></footer>
+  </div>
+
+  <div class="modal-backdrop" id="paymentModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal">
+      <button class="close" onclick="closePayment()" aria-label="Close">×</button>
+      <div class="eyebrow">Manual USDT checkout</div>
+      <h2 id="modalTitle">Payment instructions</h2>
+      <p>Product price: <strong style="color:#e7ca85">$49 USD</strong>. Before sending funds, confirm the current USDT amount and the supported network with the seller.</p>
+      <label class="field">USDT wallet address
+        <div class="copyrow"><div class="wallet" id="walletText">ADD_YOUR_USDT_WALLET_ADDRESS</div><button class="copy" onclick="copyWallet()">Copy</button></div>
+      </label>
+      <label class="field">Supported network
+        <div class="wallet" id="networkText">ADD_CONFIRMED_NETWORK — do not guess the network</div>
+      </label>
+      <p>After paying, send the transaction hash and order details to the Telegram account below. Your order is not confirmed until payment is checked.</p>
+      <a class="btn full" id="telegramLink" href="https://t.me/YOUR_TELEGRAM_USERNAME" target="_blank" rel="noopener noreferrer">Contact Astra on Telegram ↗</a>
+      <p class="small">Website owner: replace the placeholder wallet, network and Telegram username in index.html before publishing. Never ask buyers for their seed phrase or private key.</p>
+    </div>
+  </div>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+    function openPayment(){ document.getElementById("paymentModal").classList.add("show"); }
+    function closePayment(){ document.getElementById("paymentModal").classList.remove("show"); }
+    document.getElementById("paymentModal").addEventListener("click", function(e){ if(e.target === this) closePayment(); });
+    function copyWallet(){
+      const value = document.getElementById("walletText").textContent.trim();
+      if(value.startsWith("ADD_")) { alert("The website owner must add the real wallet address before publishing."); return; }
+      if(navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(value).then(()=>alert("Wallet address copied. Confirm the network before paying.")).catch(()=>alert(value));
+      else alert(value);
+    }
+  </script>
+</body>
+</html>
